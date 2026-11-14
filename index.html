@@ -4,10 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fuego Calendario (nombre provisional)</title>
+    <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
     <h1>Fuego Calendario (nombre provisional)</h1>
     <p>Calendario de actividad de incendios a partir de datos satelitales.</p>
+    <p id="aviso-prueba" class="aviso" hidden>DATOS DE PRUEBA – no son datos reales</p>
+    <main class="panel">
+      <div id="calendario" role="img" aria-label="Calendario de focos por mes y año"></div>
+      <p id="error" role="alert"></p>
+    </main>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
