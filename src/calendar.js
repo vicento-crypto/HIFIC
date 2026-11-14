@@ -4,32 +4,44 @@ import * as echarts from 'echarts';
 const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 export function dibujarCalendario(datos) {
+  // Los años salen del archivo; el agrupamiento suma todas las zonas por mes.
   const anios = [...new Set(datos.map((fila) => fila.anio))].sort((a, b) => a - b);
   const totales = new Map();
 
-  // Suma todas las celdas que pertenecen al mismo año y mes.
+  // Suma las filas de todas las zonas que pertenecen al mismo año y mes.
   for (const fila of datos) {
     const clave = `${fila.anio}-${fila.mes}`;
     totales.set(clave, (totales.get(clave) ?? 0) + fila.focos_armonizados);
   }
 
-  // Incluye cada combinación año/mes, también cuando su total es cero.
+  // Conserva todas las combinaciones: distingue un cero de un mes sin filas.
   const valores = anios.flatMap((anio, indiceAnio) =>
-    MESES.map((mes, indiceMes) => [indiceMes, indiceAnio, totales.get(`${anio}-${indiceMes + 1}`) ?? 0]),
+    MESES.map((mes, indiceMes) => {
+      const clave = `${anio}-${indiceMes + 1}`;
+      const sinDato = !totales.has(clave);
+      return {
+        value: [indiceMes, indiceAnio, totales.get(clave) ?? 0],
+        sinDato,
+        ...(sinDato ? { itemStyle: { color: '#c8cdd2' } } : {}),
+      };
+    }),
   );
+  const maximo = Math.max(...valores.filter((valor) => !valor.sinDato).map((valor) => valor.value[2]), 1);
 
   const grafico = echarts.init(document.getElementById('calendario'));
   grafico.setOption({
     tooltip: {
       position: 'top',
-      formatter: ({ data }) => `${MESES[data[0]]} ${anios[data[1]]}: ${data[2]} focos`,
+      formatter: ({ data }) => data.sinDato
+        ? `${MESES[data.value[0]]} ${anios[data.value[1]]}: sin dato`
+        : `${MESES[data.value[0]]} ${anios[data.value[1]]}: ${data.value[2]} focos`,
     },
     grid: { top: 35, right: 25, bottom: 55, left: 55 },
     xAxis: { type: 'category', data: MESES, splitArea: { show: true } },
     yAxis: { type: 'category', data: anios, splitArea: { show: true } },
     visualMap: {
       min: 0,
-      max: Math.max(...valores.map((valor) => valor[2]), 1),
+      max: maximo,
       calculable: true,
       orient: 'horizontal',
       left: 'center',
@@ -43,12 +55,16 @@ export function dibujarCalendario(datos) {
       label: {
         show: true,
         // Usa texto claro en valores bajos y oscuro en los valores altos y amarillos.
-        formatter: ({ data }) => data[2] >= Math.max(...valores.map((valor) => valor[2])) * 0.55
-          ? `{oscuro|${data[2]}}`
-          : `{claro|${data[2]}}`,
+        formatter: ({ data }) => {
+          if (data.sinDato) return '{sinDato|sin dato}';
+          return data.value[2] >= maximo * 0.55
+            ? `{oscuro|${data.value[2]}}`
+            : `{claro|${data.value[2]}}`;
+        },
         rich: {
           claro: { color: '#fff' },
           oscuro: { color: '#202124' },
+          sinDato: { color: '#30343b', fontSize: 9 },
         },
         fontSize: 10,
       },
