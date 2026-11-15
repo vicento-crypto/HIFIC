@@ -6,12 +6,35 @@ import { dibujarMapa } from './map.js';
 const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 async function iniciar() {
-// Inicia el mapa de forma independiente de la carga del CSV y del calendario.
-try {
-  dibujarMapa();
-} catch (error) {
-  document.getElementById('error-mapa').textContent = `No se pudo mostrar el mapa: ${error.message}`;
-}
+  const contenidoCalendario = document.getElementById('contenido-calendario');
+  const botonMostrar = document.getElementById('mostrar-calendario');
+  let mapa;
+  let actualizarCalendario = () => {};
+  const redimensionarVista = () => {
+    requestAnimationFrame(() => {
+      mapa?.invalidateSize({ pan: false });
+      window.dispatchEvent(new Event('resize'));
+    });
+  };
+  const mostrarCalendario = () => {
+    contenidoCalendario.hidden = false;
+    botonMostrar.hidden = true;
+    actualizarCalendario();
+    redimensionarVista();
+  };
+  botonMostrar.addEventListener('click', mostrarCalendario);
+  document.getElementById('ocultar-calendario').addEventListener('click', () => {
+    contenidoCalendario.hidden = true;
+    botonMostrar.hidden = false;
+    redimensionarVista();
+  });
+
+  // Inicia el mapa por separado; un error del contorno no quita el mapa base.
+  try {
+    mapa = dibujarMapa(mostrarCalendario);
+  } catch (error) {
+    document.getElementById('error-mapa').textContent = `No se pudo mostrar el mapa: ${error.message}`;
+  }
 
 // Actualiza el resumen de comparación para la casilla elegida.
 function mostrarComparacion(datos, mes, anio, valor, sinDato) {
@@ -50,7 +73,6 @@ function mostrarComparacion(datos, mes, anio, valor, sinDato) {
 const aviso = document.getElementById('aviso-prueba');
 aviso.hidden = !ARCHIVO_DATOS.includes('PRUEBA');
 document.getElementById('comparacion-prueba').hidden = !ARCHIVO_DATOS.includes('PRUEBA');
-
 try {
   const datos = await cargarDatos();
   // Carga ECharts solo dentro del bloque protegido para aislar sus errores.
@@ -77,7 +99,7 @@ try {
   desde.value = anios[0];
   hasta.value = anios.at(-1);
 
-  const actualizarCalendario = () => {
+  actualizarCalendario = () => {
     const minimo = Number(desde.value);
     const maximo = Number(hasta.value);
     const datosVisibles = datos.filter((fila) => fila.anio >= minimo && fila.anio <= maximo);
@@ -92,9 +114,11 @@ try {
     elementoCalendario.hidden = false;
     mensajeRango.hidden = true;
     botonDescarga.disabled = false;
-    dibujarCalendario(datosVisibles, (mes, anio, valor, sinDato) => {
-    mostrarComparacion(datos, mes, anio, valor, sinDato);
-    });
+    if (!contenidoCalendario.hidden) {
+      dibujarCalendario(datosVisibles, (mes, anio, valor, sinDato) => {
+        mostrarComparacion(datos, mes, anio, valor, sinDato);
+      });
+    }
   };
   desde.addEventListener('change', () => {
     if (Number(desde.value) > Number(hasta.value)) hasta.value = desde.value;
