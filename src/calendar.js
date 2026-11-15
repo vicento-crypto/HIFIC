@@ -3,7 +3,7 @@ import * as echarts from 'echarts';
 
 const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
-export function dibujarCalendario(datos) {
+export function dibujarCalendario(datos, alSeleccionar = () => {}) {
   // Los años salen del archivo; el agrupamiento suma todas las zonas por mes.
   const anios = [...new Set(datos.map((fila) => fila.anio))].sort((a, b) => a - b);
   const totales = new Map();
@@ -20,6 +20,7 @@ export function dibujarCalendario(datos) {
       const clave = `${anio}-${indiceMes + 1}`;
       const sinDato = !totales.has(clave);
       return {
+        // ECharts necesita un número válido; el estilo gris distingue el mes sin dato.
         value: [indiceMes, indiceAnio, totales.get(clave) ?? 0],
         sinDato,
         ...(sinDato ? { itemStyle: { color: '#c8cdd2' } } : {}),
@@ -28,7 +29,8 @@ export function dibujarCalendario(datos) {
   );
   const maximo = Math.max(...valores.filter((valor) => !valor.sinDato).map((valor) => valor.value[2]), 1);
 
-  const grafico = echarts.init(document.getElementById('calendario'));
+  const elemento = document.getElementById('calendario');
+  const grafico = echarts.getInstanceByDom(elemento) ?? echarts.init(elemento);
   grafico.setOption({
     tooltip: {
       position: 'top',
@@ -70,8 +72,14 @@ export function dibujarCalendario(datos) {
       },
       emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0, 0, 0, 0.35)' } },
     }],
-  });
+  }, true);
 
   // Ajusta el gráfico si cambia el tamaño de la ventana.
+  // Al pulsar una casilla, envía sus datos al panel de comparación.
+  grafico.off('click');
+  grafico.on('click', ({ data }) => {
+    alSeleccionar(data.value[0] + 1, anios[data.value[1]], data.value[2], data.sinDato);
+  });
+
   window.addEventListener('resize', () => grafico.resize());
 }

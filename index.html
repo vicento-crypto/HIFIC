@@ -10,7 +10,27 @@
     <h1>Fuego Calendario (nombre provisional)</h1>
     <p>Calendario de actividad de incendios a partir de datos satelitales.</p>
     <p id="aviso-prueba" class="aviso" hidden>DATOS DE PRUEBA – no son datos reales</p>
+    <p id="aviso-filas" class="aviso-filas" role="status" hidden></p>
     <main class="panel">
+      <section id="comparacion" class="comparacion" aria-live="polite" hidden>
+        <h2 id="comparacion-titulo"></h2>
+        <p id="comparacion-prueba" class="comparacion-prueba" hidden>DATOS DE PRUEBA</p>
+        <p id="comparacion-valor"></p>
+        <p id="comparacion-mediana"></p>
+        <p id="comparacion-mensaje"></p>
+      </section>
+      <section class="panel-mapa">
+        <h2>Mapa</h2>
+        <div id="mapa" aria-label="Mapa de República Dominicana"></div>
+        <p id="error-mapa" class="error-mapa" role="alert"></p>
+        <p class="nota-mapa">Mapa en construcción</p>
+      </section>
+      <div class="filtros-anios">
+        <label>Desde año <select id="desde-anio"></select></label>
+        <label>Hasta año <select id="hasta-anio"></select></label>
+        <button id="descargar-csv" type="button">Descargar CSV</button>
+      </div>
+      <p id="mensaje-rango" role="status" hidden></p>
       <div id="calendario" role="img" aria-label="Calendario de focos por mes y año"></div>
       <p id="error" role="alert"></p>
     </main>

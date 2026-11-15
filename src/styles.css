@@ -20,6 +20,14 @@ h1, body > p { max-width: 1100px; margin-left: auto; margin-right: auto; }
   text-align: center;
   font-size: 1.15rem;
 }
+.aviso-filas {
+  max-width: 1100px;
+  margin: 12px auto;
+  padding: 12px;
+  border-radius: 6px;
+  color: #493b14;
+  background: #fff4cc;
+}
 .panel {
   max-width: 1100px;
   margin: 20px auto;
@@ -29,7 +37,24 @@ h1, body > p { max-width: 1100px; margin-left: auto; margin-right: auto; }
   box-shadow: 0 2px 12px #20212418;
 }
 #calendario { width: 100%; height: 760px; }
+#mapa { width: 100%; height: 450px; }
+.panel-mapa h2 { margin: 18px 0 10px; }
+.nota-mapa { margin: 6px 0 18px; color: #5f6368; font-size: 0.85rem; }
 #error { color: #a11; }
+.error-mapa { color: #a11; }
+.comparacion {
+  margin: 4px 8px 18px;
+  padding: 12px 16px;
+  border-left: 4px solid #526273;
+  border-radius: 6px;
+  background: #f1f3f5;
+}
+.comparacion h2 { margin: 0 0 8px; font-size: 1.2rem; }
+.comparacion p { margin: 5px 0; }
+.comparacion-prueba { font-weight: 700; letter-spacing: 0.03em; }
+.filtros-anios { display: flex; gap: 16px; margin: 8px; }
+.filtros-anios label { display: flex; align-items: center; gap: 8px; }
+.filtros-anios select { padding: 6px 8px; }
 
 @media (max-width: 650px) {
   body { padding: 12px; }
