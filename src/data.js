@@ -1,11 +1,12 @@
 // Nombre del archivo de datos que se carga desde la carpeta public/data.
-export const ARCHIVO_DATOS = 'focos_mensuales_PRUEBA_ENSAYO1.csv';
+import { TEXT, idiomaInicial } from './i18n.js';
+export const ARCHIVO_DATOS = 'focos_mensuales.csv';
 
 // Descarga el CSV y convierte cada fila en un objeto con valores numéricos.
 export async function cargarDatos() {
   const respuesta = await fetch(`/data/${ARCHIVO_DATOS}`);
   if (!respuesta.ok) {
-    throw new Error(`No se encontró el archivo ${ARCHIVO_DATOS}. Comprueba que esté en public/data.`);
+    throw new Error(TEXT[idiomaInicial()].missingCsv.replace('{file}', ARCHIVO_DATOS));
   }
 
   // Quita el BOM inicial antes de leer el nombre de la primera columna.
@@ -17,21 +18,30 @@ export async function cargarDatos() {
   const obligatorias = ['anio', 'mes', 'zona', 'focos_armonizados'];
   const faltantes = obligatorias.filter((columna) => !columnas.includes(columna));
   if (faltantes.length > 0) {
-    throw new Error('El CSV debe tener las columnas anio, mes, zona y focos_armonizados.');
+    throw new Error(TEXT[idiomaInicial()].csvColumns);
   }
 
   let filasIgnoradas = 0;
   let ejemploFilaIgnorada = null;
   const datos = filas.filter(Boolean).flatMap((fila) => {
     const valores = fila.split(separador).map((valor) => valor.trim());
+    const indiceAnio = columnas.indexOf('anio');
+    const indiceMes = columnas.indexOf('mes');
+    const anioTexto = valores[indiceAnio] ?? '';
+    const mesTexto = valores[indiceMes] ?? '';
+    const columnasNumericas = ['anio', 'mes', 'focos_armonizados', 'focos_modis', 'focos_viirs', 'rango80_bajo', 'rango80_alto'];
     const objeto = Object.fromEntries(columnas.map((columna, indice) => [
       columna,
-      ['anio', 'mes', 'focos_armonizados'].includes(columna)
-        ? Number((valores[indice] ?? '').replace(',', '.'))
+      columnasNumericas.includes(columna)
+        ? (valores[indice] ?? '') === '' && !['anio', 'mes', 'focos_armonizados'].includes(columna)
+          ? null
+          : Number((valores[indice] ?? '').replace(',', '.'))
         : (valores[indice] ?? ''),
     ]));
     const valorFocos = valores[columnas.indexOf('focos_armonizados')];
-    if (valorFocos === '' || !Number.isFinite(objeto.focos_armonizados)) {
+    const anioValido = /^\d{4}$/.test(anioTexto) && Number.isInteger(objeto.anio);
+    const mesValido = /^\d+$/.test(mesTexto) && Number.isInteger(objeto.mes) && objeto.mes >= 1 && objeto.mes <= 12;
+    if (!anioValido || !mesValido || valorFocos === '' || !Number.isFinite(objeto.focos_armonizados)) {
       filasIgnoradas += 1;
       ejemploFilaIgnorada ??= { anio: objeto.anio, mes: objeto.mes };
       return [];

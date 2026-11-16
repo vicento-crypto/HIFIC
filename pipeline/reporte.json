@@ -1,0 +1,57 @@
+{
+  "reporte_filas_por_filtro": {
+    "modis": [
+      {
+        "paso": "filas leídas",
+        "filas": 42263
+      },
+      {
+        "paso": "después de type",
+        "filas": 32266
+      },
+      {
+        "paso": "después de confidence",
+        "filas": 30741
+      },
+      {
+        "paso": "después de satélite",
+        "filas": 30741
+      },
+      {
+        "paso": "después de version",
+        "filas": 30741
+      }
+    ],
+    "viirs": [
+      {
+        "paso": "filas leídas",
+        "filas": 106817
+      },
+      {
+        "paso": "después de type",
+        "filas": 98969
+      },
+      {
+        "paso": "después de confidence",
+        "filas": 91551
+      },
+      {
+        "paso": "después de satélite",
+        "filas": 91551
+      },
+      {
+        "paso": "después de version",
+        "filas": 91551
+      }
+    ]
+  },
+  "cantidad_filas": 302,
+  "primer_mes": "2000-11",
+  "ultimo_mes": "2025-12",
+  "meses_por_confianza": {
+    "alta": 167,
+    "media": 115,
+    "baja": 20
+  },
+  "meses_sospechosos": []
+}

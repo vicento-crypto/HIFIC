@@ -1,50 +1,86 @@
 ﻿<!doctype html>
-<html lang="es">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fuego Calendario (nombre provisional)</title>
+    <title>HIFIC – Historical Fire Calendar</title>
     <link rel="stylesheet" href="/src/styles.css" />
   </head>
   <body>
     <header class="barra-superior">
       <div class="marca">
-        <h1>Fuego Calendario</h1>
-        <p>¿Es este mes normal para esta zona?</p>
+        <div class="marca-principal">
+          <svg class="logo-llama" viewBox="0 0 24 28" role="img" aria-label="HIFIC flame logo">
+            <path class="llama-externa" d="M12 0.8C13.3 5.4 18.8 7.4 19.2 13.2c3.7 2.8 3.3 9.1-1 12.2-3.6 2.5-9.4 2-12.3-1.2C1.7 19.5 5.1 13.4 8.1 9.7 9 7.2 9.6 3.7 12 0.8Z" />
+            <path class="llama-interior" d="M13.1 11.1c.2 2.6 3.2 4.1 3.1 7.1-.1 2.5-1.8 4.3-4.2 4.3-2.5 0-4.1-1.9-3.6-4.2.4-2 2.7-3.5 3.2-7.2.1-.6 1.1-.7 1.5 0Z" />
+          </svg>
+          <h1>HIFIC</h1>
+        </div>
+        <p data-i18n="introSubtitle">Historical Fire Calendar</p>
       </div>
       <div class="fuente-datos">
-        <span id="aviso-prueba" class="etiqueta-prueba" hidden>DATOS DE PRUEBA</span>
-        <span>Datos: NASA FIRMS (MODIS + VIIRS)</span>
+        <label class="selector-idioma"><span class="solo-lectores">Language</span><select id="selector-idioma" aria-label="Language"><option value="es">ES</option><option value="en" selected>EN</option></select></label>
+        <span id="aviso-prueba" class="etiqueta-prueba" data-i18n="testData" hidden>SAMPLE DATA</span>
+        <span data-i18n="source">Data: NASA FIRMS (MODIS + VIIRS)</span>
       </div>
     </header>
-    <main class="aplicacion">
+    <main class="aplicacion calendario-minimizado">
       <p id="aviso-filas" class="aviso-filas" role="status" hidden></p>
       <section class="mapa-fondo">
-        <div id="mapa" aria-label="Mapa de República Dominicana"></div>
-        <button id="mostrar-calendario" class="boton-principal boton-mapa" type="button">Ver calendario de RD</button>
+        <div id="mapa" data-i18n-aria="mapAria" aria-label="Map of the Dominican Republic"></div>
         <p id="error-mapa" class="error-mapa" role="alert"></p>
-        <p class="nota-mapa">Mapa en construcción</p>
-        <footer class="creditos">Contorno: geoBoundaries (geoboundaries.org), CC BY 4.0. Mapa base: © OpenStreetMap</footer>
+        <p class="nota-mapa"><span data-i18n="mapQuestion">Is this month normal for this area?</span><br /><span data-i18n="mapHelp">Click the Dominican Republic to view the calendar</span></p>
+        <footer class="creditos" data-i18n="outlineCredit">Outline: geoBoundaries (geoboundaries.org), CC BY 4.0. Basemap: © OpenStreetMap</footer>
       </section>
-      <aside id="contenido-calendario" class="panel-lateral" hidden>
-        <button id="ocultar-calendario" class="boton-cerrar" type="button">Cerrar calendario</button>
+      <aside id="contenido-calendario" class="panel-lateral panel-minimizado">
+        <div class="fila-controles">
+          <div class="selector-vista" role="group" data-i18n-aria="viewAria" aria-label="Calendar view">
+            <button id="vista-conteo" class="seleccionada" type="button" aria-pressed="true" data-i18n="count">Count</button>
+            <button id="vista-anomalia" type="button" aria-pressed="false" data-i18n="anomaly">Anomaly</button>
+          </div>
+          <div class="filtros-anios">
+            <label><span data-i18n="fromYear">From year</span> <select id="desde-anio"></select></label>
+            <label><span data-i18n="toYear">To year</span> <select id="hasta-anio"></select></label>
+            <button id="descargar-csv" type="button" data-i18n="download">Download CSV</button>
+          </div>
+          <div class="acciones-panel">
+            <button id="minimizar-calendario" type="button"><span data-i18n="minimize">Minimize</span><span aria-hidden="true">›</span></button>
+          </div>
+        </div>
+        <div class="zona-calendario">
+          <p id="mensaje-rango" role="status" hidden></p>
+          <div id="calendario" role="img" data-i18n-aria="calendarAria" aria-label="Dominican Republic fire detections by month and year; click a cell to compare it with the median"></div>
+          <div id="leyenda-anomalia" class="leyenda-anomalia" hidden>
+            <span data-i18n="anomalyLegendMin">−100%</span>
+            <div class="leyenda-anomalia-barra" aria-hidden="true"></div>
+            <span data-i18n="anomalyLegendMid">0</span>
+            <span data-i18n="anomalyLegendMax">+100% or more</span>
+            <span class="leyenda-p90" data-i18n="legendP90">Thick border = higher than 90% of other years for that month</span>
+          </div>
+          <p class="leyenda-confianza" data-i18n="confidenceLegend">Dotted border = estimated from MODIS; no border = measured by VIIRS</p>
+        </div>
+      </aside>
+      <button id="abrir-calendario" class="boton-panel-minimizado" type="button" data-i18n-aria="openCalendar" aria-label="Open calendar">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="4" width="15" height="13" rx="2" /><path d="M6 2.5v3M14 2.5v3M2.5 8h15M6 11h2M11 11h2M6 14h2" /></svg>
+        <span data-i18n="calendar">Calendar</span>
+      </button>
+      <section id="tarjeta-comparacion" class="tarjeta-comparacion" hidden>
         <section id="comparacion" class="comparacion" aria-live="polite" hidden>
           <h2 id="comparacion-titulo"></h2>
-          <p id="comparacion-prueba" class="comparacion-prueba" hidden>DATOS DE PRUEBA</p>
+          <p id="comparacion-prueba" class="comparacion-prueba" data-i18n="testData" hidden>SAMPLE DATA</p>
           <p id="comparacion-valor"></p>
           <p id="comparacion-mediana"></p>
           <p id="comparacion-mensaje"></p>
+          <p id="comparacion-percentil"></p>
         </section>
-        <div class="filtros-anios">
-          <label>Desde año <select id="desde-anio"></select></label>
-          <label>Hasta año <select id="hasta-anio"></select></label>
-          <button id="descargar-csv" type="button">Descargar CSV</button>
-        </div>
-        <p id="mensaje-rango" role="status" hidden></p>
-        <div id="calendario" role="img" aria-label="Calendario de focos por mes y año"></div>
-      </aside>
+        <details class="como-calcula">
+          <summary data-i18n="howCalculated">How is this calculated?</summary>
+          <p data-i18n="howText">Each month is compared with the same month’s median in other years (excluding the selected year and months with no data). Dotted border = estimated from MODIS, converted to the VIIRS scale</p>
+        </details>
+      </section>
       <p id="error" role="alert"></p>
     </main>
+    <script type="module" src="/src/intro.js"></script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
