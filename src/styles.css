@@ -1,4 +1,4 @@
-/* Variables de color compartidas por toda la aplicación. */
+/* Color variables shared across the app. */
 :root {
   --fondo: #1B1B1F;
   --paneles: #26262B;

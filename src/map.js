@@ -1,4 +1,4 @@
-// Dibuja el mapa base y carga encima el contorno de República Dominicana.
+// Draws the basemap and overlays the Dominican Republic outline.
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { TEXT } from './i18n.js';
@@ -51,7 +51,7 @@ export function dibujarMapa(alHacerClicRD = () => {}, alHacerClicMapa = () => {}
     className: 'teselas-osm',
   }).addTo(mapa);
 
-  // El contorno es una capa separada y conserva su color sobre las teselas filtradas.
+  // The outline is a separate layer, so its color stays visible over the filtered tiles.
   cargarContorno(mapa, alHacerClicRD, alMapaListo, idioma);
   return mapa;
 }

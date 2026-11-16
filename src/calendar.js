@@ -1,4 +1,4 @@
-// Dibuja el total mensual de focos en un calendario de colores.
+// Draws monthly fire totals in a color-coded calendar.
 import * as echarts from 'echarts';
 import { calcularMedianaMismoMes } from './data.js';
 import { TEXT } from './i18n.js';
@@ -13,11 +13,11 @@ export function redimensionarCalendario() {
 export function dibujarCalendario(datos, alSeleccionar = () => {}, modoVista = 'conteo', datosReferencia = datos, idioma = 'es') {
   const texto = TEXT[idioma];
   const MESES = texto.monthNames;
-  // Los años salen del archivo; el agrupamiento suma todas las zonas por mes.
+  // Years come from the file; totals sum all zones for each month.
   const anios = [...new Set(datos.map((fila) => fila.anio))].sort((a, b) => a - b);
   const totales = new Map();
 
-  // Suma valores y conserva aparte la confianza y el rango para mostrar el estilo adecuado.
+  // Sum values while preserving confidence and ranges for styling.
   for (const fila of datos) {
     const clave = `${fila.anio}-${fila.mes}`;
     const total = totales.get(clave) ?? {
@@ -37,21 +37,21 @@ export function dibujarCalendario(datos, alSeleccionar = () => {}, modoVista = '
         total.rangoCompleto = false;
       }
     } else if (fila.confianza === 'alta') {
-      // Un valor medido contribuye al rango agregado como un valor exacto.
+      // Measured values count as exact values in the aggregated range.
       total.rangoBajo += fila.focos_armonizados;
       total.rangoAlto += fila.focos_armonizados;
     }
     totales.set(clave, total);
   }
 
-  // Agrupa también el archivo completo para calcular el p90 entre los otros años.
+  // Group the full file too, to calculate p90 across the other years.
   const totalesReferencia = new Map();
   for (const fila of datosReferencia) {
     const clave = `${fila.anio}-${fila.mes}`;
     totalesReferencia.set(clave, (totalesReferencia.get(clave) ?? 0) + fila.focos_armonizados);
   }
 
-  // Conserva todas las combinaciones: distingue un cero de un mes sin filas.
+  // Keep every combination to distinguish zero from a month with no rows.
   const valores = anios.flatMap((anio, indiceAnio) =>
     MESES.map((mes, indiceMes) => {
       const clave = `${anio}-${indiceMes + 1}`;
@@ -85,7 +85,7 @@ export function dibujarCalendario(datos, alSeleccionar = () => {}, modoVista = '
         estiloCelda.borderWidth = 1.5;
       }
       return {
-        // ECharts necesita un número válido; el estilo gris distingue el mes sin dato.
+        // ECharts needs a valid number; gray styling marks months with no data.
         value: [indiceMes, indiceAnio, valorGrafico],
         sinDato,
         valorFocos: total?.valor ?? null,
@@ -147,7 +147,7 @@ export function dibujarCalendario(datos, alSeleccionar = () => {}, modoVista = '
           : `${mesAnio}: ${formatoNumero(data.valorFocos, idioma)} ${texto.foci}`;
       },
     },
-    // Reserva espacio arriba para la leyenda y los nombres de los meses.
+    // Leave room above for the legend and month labels.
     grid: { top: 36, right: 25, bottom: 56, left: 65 },
     xAxis: {
       type: 'category',
@@ -181,7 +181,7 @@ export function dibujarCalendario(datos, alSeleccionar = () => {}, modoVista = '
       padding: [2, 10],
       textGap: 8,
       textStyle: { fontFamily: "'JetBrains Mono', monospace" },
-      // Violeta oscuro a amarillo, como la paleta viridis.
+      // Dark purple to yellow, following the Viridis palette.
       inRange: { color: ['#440154', '#482878', '#3e4989', '#31688e', '#26828e', '#35b779', '#6ece58', '#fde725'] },
       },
     series: [{
@@ -189,7 +189,7 @@ export function dibujarCalendario(datos, alSeleccionar = () => {}, modoVista = '
       data: valores,
       label: {
         show: true,
-        // Redondea solo la etiqueta y reduce el tamaño según la cantidad de dígitos.
+        // Round only the label and shrink it as the digit count grows.
         formatter: ({ data }) => {
           if (data.sinDato) return `{sinDato|${texto.noData}}`;
           if (modoVista === 'anomalia') {
@@ -218,7 +218,7 @@ export function dibujarCalendario(datos, alSeleccionar = () => {}, modoVista = '
       labelLayout: { hideOverlap: true },
       emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0, 0, 0, 0.35)' } },
     }, ...(celdasSobreP90.length > 0 ? [{
-      // Dibuja un contorno continuo exterior para el p90 sin tapar el borde estimado.
+      // Draw a continuous outer p90 outline without covering the estimated border.
       type: 'custom',
       coordinateSystem: 'cartesian2d',
       encode: { x: 0, y: 1 },
@@ -245,7 +245,7 @@ export function dibujarCalendario(datos, alSeleccionar = () => {}, modoVista = '
     }] : [])],
   }, true);
 
-  // Al pulsar una casilla, envía sus datos al panel de comparación.
+  // Send the selected cell's data to the comparison panel.
   grafico.off('click');
   grafico.on('click', ({ data }) => {
     alSeleccionar(data.value[0] + 1, anios[data.value[1]], data.valorFocos ?? 0, data.sinDato);

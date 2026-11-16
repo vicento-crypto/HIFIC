@@ -25,7 +25,7 @@
     calendarAria: 'Dominican Republic fire detections by month and year; click a cell to compare it with the median',
     legendP90: 'Thick border = higher than 90% of other years for that month', confidenceLegend: 'Dotted border = estimated from MODIS; no border = measured by VIIRS',
     howCalculated: 'How is this calculated?', howText: 'Each month is compared with the same month’s median in other years (excluding the selected year and months with no data). Dotted border = estimated from MODIS, converted to the VIIRS scale',
-    value: 'Value', foci: 'detections', // REVISAR: “detections” describe los focos de calor en inglés.
+    value: 'Value', foci: 'detections', // REVIEW: “detections” describes fire hotspots in English.
     noData: 'no data', noDataMonth: 'No data for this month: the CSV has no row for it.', percentileUnavailable: 'No other years with data to compare.',
     percentile: 'Higher than {value}% of other years', otherMedian: 'Median of other years', fewData: 'too few data points to compare',
     diffMedian: '{arrow} {value} detections from the median', aboveMedian: '{arrow} {value}% above the median', belowMedian: '{arrow} {value}% below the median', equalMedian: '＝ equal to the median',
@@ -44,7 +44,7 @@ export function idiomaInicial() {
     const guardado = localStorage.getItem('hific-lang');
     if (guardado === 'es' || guardado === 'en') return guardado;
   } catch (_error) {
-    // El almacenamiento puede estar deshabilitado.
+    // Storage may be disabled.
   }
   return 'en';
 }
@@ -53,6 +53,6 @@ export function guardarIdioma(idioma) {
   try {
     localStorage.setItem('hific-lang', idioma);
   } catch (_error) {
-    // El almacenamiento puede estar deshabilitado.
+    // Storage may be disabled.
   }
 }

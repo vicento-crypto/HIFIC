@@ -1,4 +1,4 @@
-// Carga los datos y muestra el calendario o un mensaje de error claro.
+// Loads the data and shows the calendar or a clear error message.
 import '@fontsource/space-grotesk/400.css';
 import '@fontsource/space-grotesk/500.css';
 import '@fontsource/space-grotesk/600.css';
@@ -63,7 +63,7 @@ async function iniciar() {
     const fecha = document.getElementById('comparacion-titulo').dataset.fecha;
     if (fecha) {
       const [mes, anio, valor, sinDato] = fecha.split(',');
-      // La tarjeta se vuelve a pintar en el idioma elegido sin recalcular sus métricas.
+      // Repaint the card in the selected language without recalculating its metrics.
       mostrarComparacion(datosCache, Number(mes), Number(anio), Number(valor), sinDato === 'true');
     }
   });
@@ -152,7 +152,7 @@ async function iniciar() {
   botonConteo.addEventListener('click', () => elegirVista('conteo'));
   botonAnomalia.addEventListener('click', () => elegirVista('anomalia'));
 
-  // Inicia el mapa por separado; un error del contorno no quita el mapa base.
+  // Initialize the map separately so an outline error does not remove the basemap.
   try {
     mapa = dibujarMapa(mostrarCalendario, minimizarCalendario, () => {
       mapaListo = true;
@@ -164,7 +164,7 @@ async function iniciar() {
     notificarInicioListo();
   }
 
-// Actualiza el resumen de comparación para la casilla elegida.
+// Updates the comparison summary for the selected cell.
 function mostrarComparacion(datos, mes, anio, valor, sinDato) {
   const panel = document.getElementById('comparacion');
   const [titulo, lineaValor, lineaMediana, mensaje] = [
@@ -223,7 +223,7 @@ document.getElementById('comparacion-prueba').hidden = !ARCHIVO_DATOS.includes('
 try {
   const datos = await cargarDatos();
   datosCache = datos;
-  // Carga ECharts solo dentro del bloque protegido para aislar sus errores.
+  // Load ECharts inside the guarded block to isolate its errors.
   if (datos.filasIgnoradas > 0) {
     const avisoFilas = document.getElementById('aviso-filas');
     avisoFilas.textContent = textoActual.invalidRows
@@ -304,7 +304,7 @@ try {
   });
   actualizarCalendario();
 
-  // Empieza en el mes más reciente que sí tiene dato.
+  // Start at the most recent month with data.
   const ultimo = datos
     .filter((fila) => Number.isFinite(fila.anio) && Number.isFinite(fila.mes))
     .sort((a, b) => b.anio - a.anio || b.mes - a.mes)[0];

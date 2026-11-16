@@ -1,18 +1,18 @@
-// Nombre del archivo de datos que se carga desde la carpeta public/data.
+// Name of the data file loaded from public/data.
 import { TEXT, idiomaInicial } from './i18n.js';
 export const ARCHIVO_DATOS = 'focos_mensuales.csv';
 
-// Descarga el CSV y convierte cada fila en un objeto con valores numéricos.
+// Fetches the CSV and converts each row into an object with numeric values.
 export async function cargarDatos() {
   const respuesta = await fetch(`/data/${ARCHIVO_DATOS}`);
   if (!respuesta.ok) {
     throw new Error(TEXT[idiomaInicial()].missingCsv.replace('{file}', ARCHIVO_DATOS));
   }
 
-  // Quita el BOM inicial antes de leer el nombre de la primera columna.
+  // Remove the leading BOM before reading the first column name.
   const texto = (await respuesta.text()).replace(/^\uFEFF/, '').trim();
   const [encabezado, ...filas] = texto.split(/\r?\n/);
-  // Detecta coma o punto y coma en el encabezado y limpia espacios sobrantes.
+  // Detect commas or semicolons in the header and trim extra spaces.
   const separador = encabezado.includes(';') ? ';' : ',';
   const columnas = encabezado.split(separador).map((columna) => columna.trim());
   const obligatorias = ['anio', 'mes', 'zona', 'focos_armonizados'];
@@ -53,7 +53,7 @@ export async function cargarDatos() {
   return datos;
 }
 
-// Calcula la mediana del mismo mes en otros años, sumando primero todas las zonas.
+// Calculates the same month's median across other years, summing all zones first.
 export function calcularMedianaMismoMes(datos, mesElegido, anioElegido) {
   const totalesPorAnio = new Map();
   for (const fila of datos) {

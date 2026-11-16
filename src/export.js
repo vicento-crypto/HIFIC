@@ -1,4 +1,4 @@
-// Descarga las filas reales del rango elegido como un archivo CSV UTF-8.
+// Downloads the selected range's actual rows as a UTF-8 CSV file.
 export function descargarCSV(datos, desdeAnio, hastaAnio, esPrueba = false) {
   const filas = datos.filter((fila) => fila.anio >= desdeAnio && fila.anio <= hastaAnio);
   const columnas = ['anio', 'mes', 'zona', 'focos_armonizados'];
@@ -10,7 +10,7 @@ export function descargarCSV(datos, desdeAnio, hastaAnio, esPrueba = false) {
     columnas.join(','),
     ...filas.map((fila) => columnas.map((columna) => escapar(fila[columna])).join(',')),
   ].join('\r\n');
-  // El BOM ayuda a que las hojas de cálculo reconozcan el texto UTF-8.
+  // The BOM helps spreadsheet apps recognize UTF-8 text.
   const archivo = new Blob(['\uFEFF', contenido], { type: 'text/csv;charset=utf-8' });
   const url = URL.createObjectURL(archivo);
   const enlace = document.createElement('a');

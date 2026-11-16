@@ -1,4 +1,4 @@
-// Lee los CSV crudos, ejecuta la armonización y guarda los resultados.
+// Reads raw CSV files, runs harmonization, and saves the results.
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { runInNewContext } = require('node:vm');
@@ -34,7 +34,7 @@ async function leerEntradas() {
 }
 
 async function cargarArmonizador() {
-  // El nombre .cjs es el esperado; el segundo se usa porque así está nombrado el archivo disponible.
+  // Try the expected .cjs name, then the available file's name.
   const rutas = [
     path.join(carpetaPipeline, 'armonizadorFuegos.cjs'),
     path.join(carpetaPipeline, 'armonizadorFuegos.cjs.js'),
@@ -52,7 +52,7 @@ async function cargarArmonizador() {
   }
   if (!texto) throw new Error('No se encontró pipeline/armonizadorFuegos.cjs.');
 
-  // Ejecuta el UMD en un contexto CommonJS sin modificar el archivo de la librería.
+  // Run the UMD in a CommonJS context without changing the library file.
   const moduloArmonizador = { exports: {} };
   runInNewContext(texto, { module: moduloArmonizador, exports: moduloArmonizador.exports }, { filename: rutaEncontrada });
   const armonizador = moduloArmonizador.exports;
